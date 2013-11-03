@@ -6,15 +6,6 @@ var local = require('./local');
 var http = require('http');
 var https = require('https');
 
-function redir(response, location) {
-    response.writeHead(301, {"Location": location});
-    response.end();
-}
-
-function isImageType(contentType) {
-	return true;
-}
-
 function protoHandlerForURL(url) {
 	if (url.indexOf('https') == 0) {
 		return https;
@@ -31,7 +22,7 @@ function download(url, to, completionF, errF) {
 		console.log("Response from url" + url);
 		console.log("   Status: " + res.statusCode);
 		console.log("   Headers: " + res.headers);
-		if (isImageType(res.headers["Content-type"])) {
+		if (local.isImageType(res.headers["Content-type"])) {
 			console.log("   Handling content type " + res.headers["Content-type"]);
 			var writeStream = fs.createWriteStream(to);
 			console.log("   Writing to " + to);
@@ -75,11 +66,7 @@ function parseParams(p) {
 	return ret;
 }
 
-// Local static file
-function handleLocalRequest(request, response) {
-
-	var localPath = local.localPathFromURL(request.url);
-	
+function sendLocalFile(localPath, response) {
 	fs.readFile(localPath, function (err, data) {
 		if (!err) {
 			// Have cached file; just return it.
@@ -91,9 +78,13 @@ function handleLocalRequest(request, response) {
 			response.writeHead(404);
 			response.write("File not found: " + localPath + " : " + message);
 			response.end();
-			
 		}
 	});
+}
+
+// Local static file
+function handleLocalRequest(request, response) {
+	var localPath = local.localPathFromURL(request.url);
 }
 
 // Transcoding magic
@@ -117,9 +108,7 @@ function handleRemoteRequest(request, response) {
 	fs.readFile(outputFilePath, function (err, data) {
 		if (!err) {
 			// Have cached file; just return it.
-			console.log(outputFilePath + " exists!");
-			response.writeHead(200);
-			response.end(data);
+			sendLocalFile(outputFilePath, response);
 		} else {
 			// Don't have cached file; have to download.
 			console.log(localPathFromURL + " not found.  Will generate " + outputFilePath);
@@ -132,9 +121,7 @@ function handleRemoteRequest(request, response) {
 						downloadedFilePath, outputFileName, params, operation,  
 						function (outputFilePath) {
 							// Scaled successfully; have output at outputFilePath
-							var URL = local.localURL(outputFilePath);
-							console.log("Redirecting to " + URL)
-						    redir(response, local.localURL(outputFilePath));
+							sendLocalFile(outputPath, response);
 						},
 						function (message) {
 							// Failed to scale.
@@ -162,11 +149,11 @@ function route(request, response) {
     var reqinfo   = url.parse(request.url, true);
 	console.log("Local reqinfo: " + reqinfo);
 
-	if (! reqinfo.query.u) {
-		// We've received a request for a local file.
-		handleLocalRequest(request, response);
-	} else {
+	if (reqinfo.query.u) {
 		handleRemoteRequest(request, response);
+	} else {
+		// We've received a direct request for a local file.
+		handleLocalRequest(request, response);
 	}
 }
 

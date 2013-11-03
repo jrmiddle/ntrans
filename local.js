@@ -24,8 +24,20 @@ function inputPath(fileName) {
 	return path.join('work', fileName);
 }
 
+function redir(response, location) {
+    response.writeHead(301, {"Location": location});
+    response.end();
+}
+
+function isImageType(contentType) {
+	return true;
+}
+
+
 exports.hash = hash;
 exports.localURL = localURL;
 exports.outputPath = outputPath;
 exports.inputPath = inputPath;
 exports.localPathFromURL = localPathFromURL;
+exports.isImageType = isImageType;
+exports.redir = redir;

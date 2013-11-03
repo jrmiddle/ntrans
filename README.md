@@ -20,7 +20,7 @@ service for source assets that are to be rendered on multiple media types.
 
 ### Make a request
 
-  `curl -L http://localhost:8888?u=https%3A%2F%2Fwww.google.com%2Fimages%2Fsrpr%2Flogo11w.png%0A&o=fit&p=100x100 > google_small.png`
+  `curl "http://localhost:8888?u=https%3A%2F%2Fwww.google.com%2Fimages%2Fsrpr%2Flogo11w.png%0A&o=fit&p=100x100" > google_small.png`
   `open google_small.png`
 
 ## Issues
@@ -32,9 +32,7 @@ This is so not production code.  Please be aware:
 1. Problems with the URL will often crash the server; I'm doing very little in terms of responsible
 URL handling, aside from avoiding remote execution.
 
-2. Responses are currently redirected, always (hence the need for `-L` in the curl line above).
-
-3. Other stuff.  Lots.
+2. Other stuff.  Lots.
 
 ### Scalability
 
