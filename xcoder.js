@@ -6,37 +6,37 @@ var path = require('path');
 var local = require('./local');
 
 var Scalers = {
-	"fit": function(inputFileName, outputFileName,  bounds, completionF, errF) {
+	"fit": function(inputFilePath, outputFileName,  bounds, completionF, errF) {
 		console.log("In fit scaler with bounds='" + bounds + "'");
-		inputPath = local.inputPath(inputFileName);
+
 		outputPath = local.outputPath(outputFileName);
 		
 		im.convert(
-			[inputPath,
+			[inputFilePath,
 			 '-resize',
 			 bounds,
 			 outputPath],
 			 
 			function(err, stdout) {
 				if (err) {
-					errF("Error scaling file '" + file + "': " + err + " : " + stdout);
+					errF("Error scaling file '" + inputFilePath + "': " + err + " : " + stdout);
 				} else {
 					completionF(outputPath);
 				}
 			}
 		);
 	},
-	"fill": function(inputFileName, outputFileName, bounds, completionF, errF) {
+	"fill": function(inputFilePath, outputFileName, bounds, completionF, errF) {
 		console.log("In fill scaler with bounds='" + bounds + "'");
 	}
 }
 
-function scaleToBounds (inputFileName, outputFileName, bounds, scaleType, completionF, errF) {
+function scaleToBounds (inputFilePath, outputFileName, bounds, scaleType, completionF, errF) {
 	var scaleFunc = Scalers[scaleType];
 	if (! scaleFunc) {
 		errF("No scaler for scaleType '" + scaleType + "'.", file);
 	} else {
-		scaleFunc(inputFileName, outputFileName, bounds, completionF, errF);
+		scaleFunc(inputFilePath, outputFileName, bounds, completionF, errF);
 	}
 }
 
