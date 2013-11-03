@@ -1,2 +1,2 @@
-output/*.jpg
+output/*
 node_modules/*
