@@ -3,7 +3,7 @@
 	"name": "ntrans",
 	"version": "0.0.1",
 	"description": "An experimental transcoding service.",
-	"keywords": ["transcode", "image", "mogrify", "imagemagick"],
+	"keywords": ["transcode", "image", "mogrify", "imagemagick", "convert"],
 	"bugs": "http://github.com/jrmiddle/ntrans/issues",
 	"email": "jrmiddle@gmail.com",
 	"license": "BSD",
@@ -26,6 +26,8 @@
 	},
 	"dependencies": {
 		"imagemagick": "0.1.3",
-		"plz": "2.0.0"
+		"plz": "2.0.0",
+		"mime": "1.2.1",
+		"tough-cookie": "0.9.15"
 	}
 }

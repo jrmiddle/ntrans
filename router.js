@@ -70,13 +70,15 @@ function sendLocalFile(localPath, response) {
 	fs.readFile(localPath, function (err, data) {
 		if (!err) {
 			// Have cached file; just return it.
+			var headers = local.headersForPath(localPath);
+			headers["ETag"] = local.eTagForBuf(data);
 			console.log(localPath + " exists!");
-			response.writeHead(200);
+			response.writeHead(200, headers);
 			response.end(data);
 		} else {
-			console.log("File not found: " + localPath + " : " + message);
+			console.log("File not found: " + localPath + " : " + err);
 			response.writeHead(404);
-			response.write("File not found: " + localPath + " : " + message);
+			response.write("File not found: " + localPath + " : " + err);
 			response.end();
 		}
 	});
