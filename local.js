@@ -3,6 +3,9 @@ var fs = require('fs');
 var path = require('path');
 var mime = require('mime');
 var cookie = require('tough-cookie');
+var localWorkDir = "work";
+var localOutputDir = "output";
+var localPortNum = "8888";
 
 function hash(input) {
 	var shasum = crypto.createHash('sha1');
@@ -14,16 +17,51 @@ function localURL(inPath) {
 	return "/" + inPath;
 }
 
+function localPort() {
+	return localPortNum;
+}
+
 function localPathFromURL(inURL) {
 	return inURL.replace(/^\/?(?:\.\.\/)*/, "");
 }
 
+function getOrCreateDirWithPath(path) {
+	if (fs.existsSync(path)) {
+
+		stats = fs.statSync(path);
+
+		if (stats.isFile()) {
+			return;
+		}
+
+		if (stats.isDirectory()) {
+			return path;
+		};
+	}
+	fs.mkdirSync(path);
+	return path;
+}
+
+function workDir() {
+	return getOrCreateDirWithPath(localWorkDir);
+}
+
+function outputDir() {
+	return getOrCreateDirWithPath(localOutputDir);
+}
+
 function outputPath(fileName) {
-	return path.join('output', fileName);
+	var od = outputDir();
+	if (od) {
+		return path.join(od, fileName);
+	}
 }
 
 function inputPath(fileName) {
-	return path.join('work', fileName);
+	var wd = workDir();
+	if (wd) {
+		return path.join('work', fileName);
+	}
 }
 
 function redir(response, location) {
@@ -66,3 +104,6 @@ exports.isImageType = isImageType;
 exports.redir = redir;
 exports.headersForPath = headersForPath;
 exports.eTagForBuf = eTagForBuf;
+exports.workDir = workDir;
+exports.outputDir = outputDir;
+exports.port = localPort;

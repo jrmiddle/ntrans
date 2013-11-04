@@ -1,5 +1,6 @@
 var http = require("http");
 var url = require("url");
+var local = require("./local");
 
 function start(route) {
 
@@ -9,8 +10,13 @@ function start(route) {
     route(request, response);
   }
 
-  http.createServer(onRequest).listen(8888);
-  console.log("Server has started.");
+  var workDir   = local.workDir();
+  var outputDir = local.outputDir();
+  var port      = local.port();
+  
+  http.createServer(onRequest).listen(port);
+  console.log("Server has started on port." + port);
+  console.log("Using outputDir: " + outputDir + " workDir: " + workDir);
 }
 
 exports.start = start;
