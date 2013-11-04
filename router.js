@@ -16,23 +16,23 @@ function protoHandlerForURL(url) {
 }
 
 function download(url, to, completionF, errF) {
-	console.log("Downloading " + url);
+	local.debug("Downloading " + url);
 	
 	responseCallback = function(res) {
-		console.log("Response from url" + url);
-		console.log("   Status: " + res.statusCode);
-		console.log("   Headers: " + res.headers);
+		local.debug("Response from url" + url);
+		local.debug("   Status: " + res.statusCode);
+		local.debug("   Headers: " + res.headers);
 		if (local.isImageType(res.headers["Content-type"])) {
-			console.log("   Handling content type " + res.headers["Content-type"]);
+			local.debug("   Handling content type " + res.headers["Content-type"]);
 			var writeStream = fs.createWriteStream(to);
-			console.log("   Writing to " + to);
+			local.debug("   Writing to " + to);
 			res.pipe(writeStream);
 			res.on('close', function() {
-				console.log("Unexpectedly closed when pulling " + to + " from " + url);
+				local.debug("Unexpectedly closed when pulling " + to + " from " + url);
 				completionF(to);
 			});
 			res.on('end', function() {
-				console.log("Finished pulling " + to + " from " + url);
+				local.debug("Finished pulling " + to + " from " + url);
 				completionF(to);
 			});
 		} else {
@@ -72,11 +72,11 @@ function sendLocalFile(localPath, response) {
 			// Have cached file; just return it.
 			var headers = local.headersForPath(localPath);
 			headers["ETag"] = local.eTagForBuf(data);
-			console.log(localPath + " exists!");
+			local.log("Sending local file " + localPath);
 			response.writeHead(200, headers);
 			response.end(data);
 		} else {
-			console.log("File not found: " + localPath + " : " + err);
+			local.error("File not found: " + localPath + " : " + err);
 			response.writeHead(404);
 			response.write("File not found: " + localPath + " : " + err);
 			response.end();
@@ -94,14 +94,14 @@ function handleRemoteRequest(request, response) {
     var reqinfo   = url.parse(request.url, true);
 	
 	var remoteReqInfo = url.parse(reqinfo.query.u);
-	console.log("Remote reqinfo: " + remoteReqInfo);
-	console.log("Remote URL: " + remoteReqInfo.href)
+	local.debug("Remote reqinfo: " + remoteReqInfo);
+	local.debug("Remote URL: " + remoteReqInfo.href)
 
 	var operation = parseOperation(reqinfo.query.o);
-	console.log("Parsed operation: " + operation)
+	local.debug("Parsed operation: " + operation)
 
 	var params = parseParams(reqinfo.query.p);
-	console.log("Parsed params: " + params);
+	local.debug("Parsed params: " + params);
 
 	var outputFileName = local.hash(remoteReqInfo.href + operation + params);
 	var outputFilePath = local.outputPath(outputFileName);
@@ -113,7 +113,7 @@ function handleRemoteRequest(request, response) {
 			sendLocalFile(outputFilePath, response);
 		} else {
 			// Don't have cached file; have to download.
-			console.log(localPathFromURL + " not found.  Will generate " + outputFilePath);
+			local.debug(localPathFromURL + " not found.  Will generate " + outputFilePath);
 		
 			download(remoteReqInfo.href,
 				local.inputPath(outputFileName),
@@ -123,10 +123,12 @@ function handleRemoteRequest(request, response) {
 						downloadedFilePath, outputFileName, params, operation,  
 						function (outputFilePath) {
 							// Scaled successfully; have output at outputFilePath
+							local.log("Scaled " + remoteReqInfo.href + " to bounds " + params);
 							sendLocalFile(outputPath, response);
 						},
 						function (message) {
 							// Failed to scale.
+							local.error("Unable to scale file: " + message);
 						    response.writeHead(500);
 						    response.write("Failed to scale file: " + message);
 						    response.end();
@@ -135,9 +137,9 @@ function handleRemoteRequest(request, response) {
 				},
 				function (message) {
 					// Failed to download
-					console.log("Error downoading file: " + message);
+					local.error("Unable to download file: " + message);
 					response.writeHead(500);
-					response.write("Error downloading file: " + message);
+					response.write("Unable to download file: " + message);
 					response.end();
 				}
 			);
@@ -149,7 +151,7 @@ function handleRemoteRequest(request, response) {
 
 function route(request, response) {
     var reqinfo   = url.parse(request.url, true);
-	console.log("Local reqinfo: " + reqinfo);
+	local.log("Request: " + request.url);
 
 	if (reqinfo.query.u) {
 		handleRemoteRequest(request, response);

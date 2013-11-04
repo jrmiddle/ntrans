@@ -6,6 +6,20 @@ var cookie = require('tough-cookie');
 var localWorkDir = "work";
 var localOutputDir = "output";
 
+function log(message) {
+	console.log("[" + cookie.formatDate(new Date()) + "] " + message);
+}
+
+function debug(message) {
+	if (process.env.NTRANS_DEBUG) {
+		log("DEBUG: " + message);
+	}
+}
+
+function error(message) {
+	log("ERROR: " + message);
+}
+
 function hash(input) {
 	var shasum = crypto.createHash('sha1');
 	shasum.update(input);
@@ -113,3 +127,6 @@ exports.eTagForBuf = eTagForBuf;
 exports.workDir = workDir;
 exports.outputDir = outputDir;
 exports.port = localPort;
+exports.log = log;
+exports.debug = debug;
+exports.error = error;

@@ -7,7 +7,8 @@ var local = require('./local');
 
 var Scalers = {
 	"fit": function(inputFilePath, outputFileName,  bounds, completionF, errF) {
-		console.log("In fit scaler with bounds='" + bounds + "'");
+		
+		local.log("Scale type FIT, bounds=" + bounds);
 
 		outputPath = local.outputPath(outputFileName);
 		
