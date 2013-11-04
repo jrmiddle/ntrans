@@ -18,6 +18,9 @@ service for source assets that are to be rendered on multiple media types.
 2. Install dependencies: `npm install`
 3. Run the server: `node index.js`
 
+The server currently listens on 8888.  This is "configurable" in local.js.
+This will be pulled into proper config later.
+
 ### Make a request
 
   `curl "http://localhost:8888?u=https%3A%2F%2Fwww.google.com%2Fimages%2Fsrpr%2Flogo11w.png%0A&o=fit&p=100x100" > google_small.png`
@@ -27,12 +30,22 @@ service for source assets that are to be rendered on multiple media types.
 
 This is so not production code.  Please be aware:
 
+### ~Features
+
+1. Only a fit scaler is currently supported.  Fill coming later.
+
+2. Nothing but a fit scaler is supported.
+
+3. It's uhhh... zeroconf.  Any port or if you want, as long as it's localhost:8888.
+
 ### Robustness
 
-1. Problems with the URL will often crash the server; I'm doing very little in terms of responsible
+Problems with the URL will often crash the server; I'm doing very little in terms of responsible
 URL handling, aside from avoiding remote execution.
 
-2. Other stuff.  Lots.
+### Other stuff. 
+
+Lots.
 
 ### Scalability
 
