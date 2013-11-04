@@ -5,7 +5,6 @@ var mime = require('mime');
 var cookie = require('tough-cookie');
 var localWorkDir = "work";
 var localOutputDir = "output";
-var localPortNum = "8888";
 
 function hash(input) {
 	var shasum = crypto.createHash('sha1');
@@ -18,7 +17,14 @@ function localURL(inPath) {
 }
 
 function localPort() {
-	return localPortNum;
+	var port = process.env.NTRANS_PORT;
+	if (!port) {
+		port = process.env.npm_package_config_port;
+	}
+	if (!port) {
+		port = '8888'
+	}
+	return port;
 }
 
 function localPathFromURL(inURL) {

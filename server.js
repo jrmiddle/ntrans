@@ -15,7 +15,7 @@ function start(route) {
   var port      = local.port();
   
   http.createServer(onRequest).listen(port);
-  console.log("Server has started on port." + port);
+  console.log("Server has started on port:" + port);
   console.log("Using outputDir: " + outputDir + " workDir: " + workDir);
 }
 
