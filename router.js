@@ -127,8 +127,8 @@ function handleRemoteRequest(request, response) {
 						},
 						function (message) {
 							// Failed to scale.
-						    response.writeHead(200, {"Content-Type": "text/plain"});
-						    response.write("Oh, phooey: " + message);
+						    response.writeHead(500);
+						    response.write("Failed to scale file: " + message);
 						    response.end();
 						}
 					);
